@@ -34,6 +34,8 @@ BleGamepad bleGamepad("Gigachad Toaster", "Wir", 69);
 int lastButtonState[4] = {0, 0, 0, 0};
 int buttonPins[4] = {GPIO_NUM_4, GPIO_NUM_19, GPIO_NUM_5, GPIO_NUM_18};
 int potiPin = GPIO_NUM_34;
+int poti = 0;
+int potiMapped = 0;
 
 // Gyro stuff
 Adafruit_MPU6050 mpu;
@@ -177,7 +179,7 @@ void readGyroSensor()
     //set joystick according to gyro data
     int xMapped = map(a.acceleration.x, -8, 8, 0, 2000);
     int yMapped = map(a.acceleration.y, -8, 8, 0, 2000);
-    int zMapped = map(a.acceleration.z - 9.6, -8, 8, 0, 2000);
+    int zMapped = map(a.acceleration.z - 9.6, -8, 8, 0, 2000); // -9.6 adjust for gravity
     bleGamepad.setAxes(xMapped, yMapped, zMapped, 0, 0, 0, 0, 0);
     
 }
@@ -191,14 +193,12 @@ void loop()
         // Gyro stuff
         readGyroSensor();
         // Poti stuff
-        int poti = analogRead(potiPin);
-        int potiMapped = map(poti, 0, 4095, 0, 2000);
+        poti = analogRead(potiPin);
+        potiMapped = map(poti, 0, 4095, 0, 2000);
         bleGamepad.setSlider1(potiMapped);
-        bleGamepad.sendReport(); //TODO: check if auto report is enabled, maybe unnecessary
         //Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
 
         // Button stuff
-
         for (int index = 0; index < 4; index++)
         {
             int currentButtonState = !digitalRead(buttonPins[index]);
