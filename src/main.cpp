@@ -28,7 +28,7 @@
 #include <BleGamepad.h>
 #include <Wire.h>
 
-BleGamepad bleGamepad;
+BleGamepad bleGamepad("Gigachad Toaster", "Wir", 69);
 
 // Button stuff
 int lastButtonState[4] = {0, 0, 0, 0};
@@ -137,6 +137,9 @@ void setup()
     BleGamepadConfiguration bleGamepadConfig;
     bleGamepadConfig.setAxesMax(2000);
     bleGamepadConfig.setAxesMin(0);
+    bleGamepadConfig.setAutoReport(true);
+    bleGamepadConfig.setButtonCount(4);
+    bleGamepadConfig.setWhichAxes(1,1,1,0,0,0,1,0);
     bleGamepad.begin(&bleGamepadConfig);
 
     // The default bleGamepad.begin() above enables 16 buttons, all axes, one hat, and no simulation controls or special buttons
@@ -170,11 +173,12 @@ void readGyroSensor()
     Serial.print(temp.temperature);
     Serial.println(" degC");
     */
+
     //set joystick according to gyro data
     int xMapped = map(a.acceleration.x, -8, 8, 0, 2000);
     int yMapped = map(a.acceleration.y, -8, 8, 0, 2000);
-    bleGamepad.setAxes(xMapped, yMapped, 0, 0, 0, 0, 0, 0);
-    bleGamepad.sendReport();
+    int zMapped = map(a.acceleration.z - 9.6, -8, 8, 0, 2000);
+    bleGamepad.setAxes(xMapped, yMapped, zMapped, 0, 0, 0, 0, 0);
     
 }
 
@@ -188,8 +192,10 @@ void loop()
         readGyroSensor();
         // Poti stuff
         int poti = analogRead(potiPin);
-        int potiMapped = map(poti, 666, 863, 0, 1023);
-        Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
+        int potiMapped = map(poti, 0, 4095, 0, 2000);
+        bleGamepad.setSlider1(potiMapped);
+        bleGamepad.sendReport(); //TODO: check if auto report is enabled, maybe unnecessary
+        //Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
 
         // Button stuff
 
