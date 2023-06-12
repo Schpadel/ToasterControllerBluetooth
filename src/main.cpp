@@ -176,9 +176,9 @@ void readGyroSensor()
     */
 
     //set joystick according to gyro data
-    int xMapped = map(a.acceleration.x, -8, 8, 0, 2000);
-    int yMapped = map(a.acceleration.y, -8, 8, 0, 2000);
-    int zMapped = map(a.acceleration.z - 9.6, -8, 8, 0, 2000); // -9.6 adjust for gravity
+    int xMapped = map(a.acceleration.x * -1, -8, 8, 0, 2000);
+    int yMapped = map(a.acceleration.y * -1, -8, 8, 0, 2000);
+    int zMapped = map(a.acceleration.z + 9.6, -8, 8, 0, 2000); // +9.6 adjust for gravity
     bleGamepad.setAxes(xMapped, yMapped, zMapped, 0, 0, 0, 0, 0);
     
 }
@@ -196,7 +196,7 @@ void loop()
         potiMapped = map(poti, 4095, 784, 0, 2000);
         bleGamepad.setSlider1(potiMapped);
         
-        Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
+        //Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
 
         // Button stuff
         for (int index = 0; index < 4; index++)
