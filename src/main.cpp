@@ -32,8 +32,8 @@ BleGamepad bleGamepad("Gigachad Toaster", "Wir", 69);
 
 // Button stuff
 int lastButtonState[4] = {0, 0, 0, 0};
-int buttonPins[4] = {GPIO_NUM_4, GPIO_NUM_19, GPIO_NUM_5, GPIO_NUM_18};
-int potiPin = GPIO_NUM_34;
+int buttonPins[4] = {GPIO_NUM_13, GPIO_NUM_12, GPIO_NUM_14, GPIO_NUM_26};
+int potiPin = GPIO_NUM_27;
 int potiMapped = 0;
 int poti = 0;
 
@@ -42,15 +42,11 @@ Adafruit_MPU6050 mpu;
 
 void setup()
 {
-
     // Initialize Button Pins
-    pinMode(GPIO_NUM_4, INPUT_PULLUP); // DREHEN links         X
-    pinMode(GPIO_NUM_19, INPUT_PULLUP); // DREHEN rechts        B
-    pinMode(GPIO_NUM_5, INPUT_PULLUP);  // Bewegung nach unten   A
-    pinMode(GPIO_NUM_18, INPUT_PULLUP); // Bewegung nach oben   Y
-
-    // Potentiometer
-    // pinMode(potiPin, INPUT); // get analog data from potentiometer
+    pinMode(buttonPins[0], INPUT_PULLUP); // DREHEN links         X
+    pinMode(buttonPins[1], INPUT_PULLUP); // DREHEN rechts        B
+    pinMode(buttonPins[2], INPUT_PULLUP);  // Bewegung nach unten   A
+    pinMode(buttonPins[3], INPUT_PULLUP); // Bewegung nach oben   Y
 
     // Test old: 115200
     Serial.begin(9600);
@@ -58,7 +54,10 @@ void setup()
     // Start gyro stuff
 
     // Try to initialize!
-    if (!mpu.begin())
+
+    //Overwrite default I2C pins (ESP32 SDA=21, SCL=22) with SDA=4, SCL=15
+    Wire.begin(GPIO_NUM_4, GPIO_NUM_15);
+    if (!mpu.begin(0x68, &Wire, 0))
     {
         Serial.println("Failed to find MPU6050 chip");
         while (1)
@@ -194,7 +193,7 @@ void loop()
         readGyroSensor();
         // Poti stuff
         poti = analogRead(potiPin);
-        potiMapped = map(poti, 0, 4095, 0, 2000);
+        potiMapped = map(poti, 4095, 784, 0, 2000);
         bleGamepad.setSlider1(potiMapped);
         
         Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
