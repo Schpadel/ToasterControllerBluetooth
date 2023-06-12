@@ -34,8 +34,8 @@ BleGamepad bleGamepad("Gigachad Toaster", "Wir", 69);
 int lastButtonState[4] = {0, 0, 0, 0};
 int buttonPins[4] = {GPIO_NUM_4, GPIO_NUM_19, GPIO_NUM_5, GPIO_NUM_18};
 int potiPin = GPIO_NUM_34;
-int poti = 0;
 int potiMapped = 0;
+int poti = 0;
 
 // Gyro stuff
 Adafruit_MPU6050 mpu;
@@ -196,7 +196,8 @@ void loop()
         poti = analogRead(potiPin);
         potiMapped = map(poti, 0, 4095, 0, 2000);
         bleGamepad.setSlider1(potiMapped);
-        //Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
+        
+        Serial.println((String) "raw value: " + poti + " mapped value: " + potiMapped);
 
         // Button stuff
         for (int index = 0; index < 4; index++)
